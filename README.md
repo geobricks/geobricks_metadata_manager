@@ -1,4 +1,4 @@
 Geobricks Metadata Manager
 ==========================
 
-Geobricks library to handle layers's metdata
+Geobricks library to handle layers's metadata
