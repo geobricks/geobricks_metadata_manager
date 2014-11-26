@@ -8,85 +8,70 @@ log = logger("geobricks_metadata_manager.metadata_manager_d3s_core")
 class MetadataManager():
 
     config = None
-    #config.url_create_metadata = None #"POST"
-    #config.url_get_metadata_uid = None #"GET"
+    url_create_metadata = None #"POST"
+    url_get_metadata_uid = None #"GET"
+    url_get_metadata = None #"POST"
 
     def __init__(self, config):
         # settings
         self.config = config
-        log.info(self.config)
+        # mapping the urls
+        try:
+            self.url_create_metadata = config["url_create_metadata"]
+            self.url_get_metadata_uid = config["url_get_metadata_uid"]
+            self.url_get_metadata = config["url_get_metadata"]
+        except Exception, e:
+            raise Exception("Not all the urls are mapped: " + e)
 
-    def publish_metadata(self, payload):
+    def publish_metadata(self, payload, overwrite=False):
+        #TODO: use overwrite
         '''
         Create a new metadata
         :param payload: json string containing the metadata information
         :return: the result json with basic metadata
         '''
         headers = {'Content-Type': 'application/json'}
-        print self.config['url_create_metadata']
-        r = requests.post(self.config['url_create_metadata'], data=json.dumps(payload), headers=headers)
+        r = requests.post(self.url_create_metadata, data=json.dumps(payload), headers=headers)
         if r.status_code is not 201:
-            raise Exception(r.text, r.status_code)
+            raise Exception(r.text)
         return json.loads(r.text)
 
-    def get_metadata_uid(self, uid):
+    def delete_metadata(self, uid):
+        '''
+        Create a new metadata
+        :param payload: json string containing the metadata information
+        :return: the result json with basic metadata
+        '''
+        headers = {'Content-Type': 'application/json'}
+        r = requests.post(self.url_create_metadata, data=json.dumps(uid), headers=headers)
+        if r.status_code is not 201:
+            raise Exception(r.text)
+        return json.loads(r.text)
+
+    def get_by_uid(self, uid):
         '''
         Get metadata through his uid
         :param uid: String of the uid
         :return: the json containing the metadata
         '''
-        url = self.config['url_get_metadata_uid'].replace("<uid>", uid);
+        url = self.url_get_metadata_uid.replace("<uid>", uid);
         r = requests.get(url)
         log.info(r.text)
         log.info(r.status_code)
         if r.status_code is not 200:
-            raise Exception(r.text, r.status_code)
+            raise Exception(r.text)
         return json.loads(r.text)
 
-
-#
-# config = {
-#     "url_create_metadata": "http://exldvsdmxreg1.ext.fao.org:7788/v2/msd/resources/metadata",
-#     "url_get_metadata_uid": "http://exldvsdmxreg1.ext.fao.org:7788/v2/msd/resources/metadata/uid/<uid>",
-# }
-#
-# metadata_manager = MetadataManager(config)
-#
-# metadata = {
-#     "uid": "fenix|gaul0_2",
-#     "creationDate": 1416221596000,
-#     "meContent": {
-#         "resourceRepresentationType": "geographic",
-#         "seCoverage": {
-#             "coverageSectors": {
-#                 "idCodeList": "FENIX_GeographicalSectors",
-#                 "version" : "1.0",
-#                 "codes": [{"code": "MODIS_LAND_COVER"}]
-#             },
-#             "coverageTime": {
-#                 "to": 949276800000,
-#                 "from": 946684800000
-#             }
-#         }
-#     },
-#     "meSpatialRepresentation": {
-#         "processing": {
-#             "idCodeList": "FENIX_GeographicalProcessing",
-#             "version" : "1.0",
-#             "codes": [{"code": "AVG_MONTHLY"}]
-#         },
-#         "seDefaultStyle": {"name": "ghg_cultivation_organic_soils_cropland"},
-#         "layerType": "vector"
-#     },
-#     "title": {"EN": "Cultivation Organic Soils - Croplands"},
-#
-#     "dsd": {
-#         "contextSystem": "FENIX",
-#         "workspace": "fenix",
-#         "layerName": "gaul0_2"
-#     }
-# }
-#
-# metadata_manager.get_metadata_uid("fenix|gaul0_22")
-
-#metadata_manager.publish_metadata(metadata)
+    def get_all_layers(self):
+        q = {
+            "meContent.resourceRepresentationType" : {
+                "enumeration" : ["geographic"]
+            }
+        }
+        headers = {'Content-Type': 'application/json'}
+        r = requests.post(self.url_get_metadata, data=json.dumps(q), headers=headers)
+        log.info(r.text)
+        log.info(r.status_code)
+        if r.status_code is not 200:
+            raise Exception(r.text)
+        return json.loads(r.text)
