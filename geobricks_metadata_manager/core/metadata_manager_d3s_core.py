@@ -21,7 +21,13 @@ class MetadataManager():
             self.url_get_metadata_uid = config["url_get_metadata_uid"]
             self.url_get_metadata = config["url_get_metadata"]
         except Exception, e:
+            log.error(e)
             raise Exception("Not all the urls are mapped: " + e)
+
+        # setting logging properties
+        if "logger" in config:
+            if "level" in config["logger"]:
+                log.setLevel(config["logger"]["level"])
 
     def publish_metadata(self, payload, overwrite=False):
         #TODO: use overwrite
@@ -42,11 +48,11 @@ class MetadataManager():
         :param payload: json string containing the metadata information
         :return: the result json with basic metadata
         '''
-        headers = {'Content-Type': 'application/json'}
-        r = requests.post(self.url_create_metadata, data=json.dumps(uid), headers=headers)
-        if r.status_code is not 201:
-            raise Exception(r.text)
-        return json.loads(r.text)
+        url = self.url_get_metadata_uid.replace("<uid>", uid)
+        r = requests.delete(url)
+        if r.status_code is not 200:
+            raise Exception(r)
+        return True #There is no r.text in that case
 
     def get_by_uid(self, uid):
         '''
@@ -54,7 +60,7 @@ class MetadataManager():
         :param uid: String of the uid
         :return: the json containing the metadata
         '''
-        url = self.url_get_metadata_uid.replace("<uid>", uid);
+        url = self.url_get_metadata_uid.replace("<uid>", uid)
         r = requests.get(url)
         log.info(r.text)
         log.info(r.status_code)
