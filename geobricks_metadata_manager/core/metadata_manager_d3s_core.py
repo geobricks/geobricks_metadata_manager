@@ -1,8 +1,9 @@
 import requests
 import json
 from geobricks_metadata_manager.utils.log import logger
+from geobricks_metadata_manager.config.config import config
 
-log = logger("geobricks_metadata_manager.metadata_manager_d3s_core")
+log = logger(__file__)
 
 
 class MetadataManager():
@@ -13,13 +14,14 @@ class MetadataManager():
     url_get_metadata = None #"POST"
 
     def __init__(self, config):
-        # settings
+        # getting the settings
+        config = config["settings"]
         self.config = config
         # mapping the urls
         try:
-            self.url_create_metadata = config["url_create_metadata"]
-            self.url_get_metadata_uid = config["url_get_metadata_uid"]
-            self.url_get_metadata = config["url_get_metadata"]
+            self.url_create_metadata = config["metadata"]["url_create_metadata"]
+            self.url_get_metadata_uid = config["metadata"]["url_get_metadata_uid"]
+            self.url_get_metadata = config["metadata"]["url_get_metadata"]
         except Exception, e:
             log.error(e)
             raise Exception("Not all the urls are mapped: " + e)
@@ -39,7 +41,7 @@ class MetadataManager():
         headers = {'Content-Type': 'application/json'}
         r = requests.post(self.url_create_metadata, data=json.dumps(payload), headers=headers)
         if r.status_code is not 201:
-            raise Exception(r.text)
+            raise Exception(r)
         return json.loads(r.text)
 
     def delete_metadata(self, uid):
@@ -48,6 +50,7 @@ class MetadataManager():
         :param payload: json string containing the metadata information
         :return: the result json with basic metadata
         '''
+        log.info("delete_metadata")
         url = self.url_get_metadata_uid.replace("<uid>", uid)
         r = requests.delete(url)
         if r.status_code is not 200:
@@ -76,8 +79,6 @@ class MetadataManager():
         }
         headers = {'Content-Type': 'application/json'}
         r = requests.post(self.url_get_metadata, data=json.dumps(q), headers=headers)
-        log.info(r.text)
-        log.info(r.status_code)
-        if r.status_code is not 200:
+        if r.status_code is not 201: # TODO: why 201?
             raise Exception(r.text)
         return json.loads(r.text)
