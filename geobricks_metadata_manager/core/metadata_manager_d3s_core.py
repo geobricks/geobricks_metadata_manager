@@ -39,9 +39,32 @@ class MetadataManager():
         :return: the result json with basic metadata
         '''
         headers = {'Content-Type': 'application/json'}
-        r = requests.post(self.url_create_metadata, data=json.dumps(payload), headers=headers)
-        if r.status_code is not 201:
-            raise Exception(r)
+        if overwrite:
+            r = requests.put(self.url_create_metadata, data=json.dumps(payload), headers=headers)
+            if r.status_code is not 200:
+                raise Exception(r)
+        else:
+            r = requests.post(self.url_create_metadata, data=json.dumps(payload), headers=headers)
+            if r.status_code is not 201:
+                raise Exception(r)
+        return json.loads(r.text)
+
+    def update_metadata(self, payload, overwrite=False):
+        #TODO: use overwrite
+        '''
+        Update a metadata
+        :param payload: json string containing the metadata information
+        :return: the result json with basic metadata
+        '''
+        headers = {'Content-Type': 'application/json'}
+        if overwrite:
+            r = requests.put(self.url_create_metadata, data=json.dumps(payload), headers=headers)
+            if r.status_code is not 200:
+                raise Exception(r)
+        else:
+            r = requests.patch(self.url_create_metadata, data=json.dumps(payload), headers=headers)
+            if r.status_code is not 200:
+                raise Exception(r)
         return json.loads(r.text)
 
     def delete_metadata(self, uid):
