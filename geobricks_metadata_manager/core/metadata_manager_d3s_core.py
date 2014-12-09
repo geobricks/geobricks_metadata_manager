@@ -10,6 +10,7 @@ class MetadataManager():
 
     config = None
     url_create_metadata = None #"POST"
+    url_create_coding_system = None #"POST"
     url_get_metadata_uid = None #"GET"
     url_get_metadata = None #"POST"
 
@@ -20,8 +21,10 @@ class MetadataManager():
         # mapping the urls
         try:
             self.url_create_metadata = config["metadata"]["url_create_metadata"]
+            self.url_create_coding_system = config["metadata"]["url_create_coding_system"]
             self.url_get_metadata_uid = config["metadata"]["url_get_metadata_uid"]
             self.url_get_metadata = config["metadata"]["url_get_metadata"]
+
         except Exception, e:
             log.error(e)
             raise Exception("Not all the urls are mapped: " + e)
@@ -39,6 +42,8 @@ class MetadataManager():
         :return: the result json with basic metadata
         '''
         headers = {'Content-Type': 'application/json'}
+        log.info(json.dumps(payload))
+        log.info(overwrite)
         if overwrite:
             r = requests.put(self.url_create_metadata, data=json.dumps(payload), headers=headers)
             if r.status_code is not 200:
@@ -67,6 +72,40 @@ class MetadataManager():
                 raise Exception(r)
         return json.loads(r.text)
 
+    def publish_coding_system(self, payload, overwrite=False):
+        '''
+        Create a new metadata
+        :param payload: json string containing the metadata information
+        :return: the result json with basic metadata
+        '''
+        headers = {'Content-Type': 'application/json'}
+        if overwrite:
+            r = requests.put(self.url_create_coding_system, data=json.dumps(payload), headers=headers)
+            if r.status_code is not 200:
+                raise Exception(r)
+        else:
+            r = requests.post(self.url_create_coding_system, data=json.dumps(payload), headers=headers)
+            if r.status_code is not 201:
+                raise Exception(r)
+        return json.loads(r.text)
+
+    def update_coding_system(self, payload, overwrite=False):
+        '''
+        Create a new metadata
+        :param payload: json string containing the metadata information
+        :return: the result json with basic metadata
+        '''
+        headers = {'Content-Type': 'application/json'}
+        if overwrite:
+            r = requests.put(self.url_create_coding_system, data=json.dumps(payload), headers=headers)
+            if r.status_code is not 200:
+                raise Exception(r)
+        else:
+            r = requests.patch(self.url_create_coding_system, data=json.dumps(payload), headers=headers)
+            if r.status_code is not 201:
+                raise Exception(r)
+        return json.loads(r.text)
+
     def delete_metadata(self, uid):
         '''
         Create a new metadata
@@ -86,6 +125,7 @@ class MetadataManager():
         :param uid: String of the uid
         :return: the json containing the metadata
         '''
+        print
         url = self.url_get_metadata_uid.replace("<uid>", uid)
         r = requests.get(url)
         log.info(r.text)
