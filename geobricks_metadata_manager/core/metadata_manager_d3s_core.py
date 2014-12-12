@@ -136,8 +136,8 @@ class MetadataManager():
 
     def get_all_layers(self):
         q = {
-            "meContent.resourceRepresentationType" : {
-                "enumeration" : ["geographic"]
+            "meContent.resourceRepresentationType": {
+                "enumeration": ["geographic"]
             }
         }
         headers = {'Content-Type': 'application/json'}
