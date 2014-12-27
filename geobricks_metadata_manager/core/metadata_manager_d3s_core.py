@@ -1,7 +1,6 @@
 import requests
 import json
-from geobricks_metadata_manager.utils.log import logger
-from geobricks_metadata_manager.config.config import config
+from geobricks_common.core.log import logger
 
 log = logger(__file__)
 
