@@ -20,9 +20,9 @@ def discovery():
     @return: Dictionary containing information about the service.
     """
     out = {
-        'name': 'Metadata manager service',
-        'description': 'Geocoding metadata manager service.',
-        'type': 'metadata_manager'
+        "name": "Metadata Manager",
+        "description": "Metadata manager services.",
+        "type": "SERVICE"
     }
     return Response(json.dumps(out), content_type='application/json; charset=utf-8')
 
