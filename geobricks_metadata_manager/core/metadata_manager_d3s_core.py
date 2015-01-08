@@ -29,7 +29,7 @@ class MetadataManager():
 
         except Exception, e:
             log.error(e)
-            raise Exception("Not all the urls are mapped: " + e)
+            raise Exception("Not all the urls are mapped: " + str(e))
 
         # setting logging properties
         if "logger" in config:
