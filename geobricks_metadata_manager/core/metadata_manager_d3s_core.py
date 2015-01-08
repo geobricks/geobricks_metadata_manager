@@ -12,6 +12,7 @@ class MetadataManager():
     url_create_coding_system = None #"POST"
     url_get_metadata_uid = None #"GET"
     url_get_metadata = None #"POST"
+    url_delete_metadata= None #"DELETE"
 
     def __init__(self, config):
         # getting the settings
@@ -23,6 +24,8 @@ class MetadataManager():
             self.url_create_coding_system = config["metadata"]["url_create_coding_system"]
             self.url_get_metadata_uid = config["metadata"]["url_get_metadata_uid"]
             self.url_get_metadata = config["metadata"]["url_get_metadata"]
+            self.url_delete_metadata = config["metadata"]["url_delete_metadata"]
+
 
         except Exception, e:
             log.error(e)
@@ -112,20 +115,20 @@ class MetadataManager():
         :return: the result json with basic metadata
         '''
         log.info("delete_metadata")
-        url = self.url_get_metadata_uid.replace("<uid>", uid)
+        url = self.url_delete_metadata.replace("<uid>", uid)
         r = requests.delete(url)
         if r.status_code is not 200:
             raise Exception(r)
         return True #There is no r.text in that case
 
-    def get_by_uid(self, uid):
+    def get_by_uid(self, uid, full=True, dsd=True):
         '''
-        Get metadata through his uid
+        Get metadata through his uid (proxy to D3S)
         :param uid: String of the uid
         :return: the json containing the metadata
         '''
-        print
         url = self.url_get_metadata_uid.replace("<uid>", uid)
+        url += "?full=" + str(full) + "&dsd=" + str(dsd)
         r = requests.get(url)
         log.info(r.text)
         log.info(r.status_code)
