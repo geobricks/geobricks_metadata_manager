@@ -25,6 +25,7 @@ class MetadataManager():
             self.url_get_metadata_uid = config["metadata"]["url_get_metadata_uid"]
             self.url_get_metadata = config["metadata"]["url_get_metadata"]
             self.url_delete_metadata = config["metadata"]["url_delete_metadata"]
+            self.url_overwrite_dsd_rid = config["metadata"]["url_overwrite_dsd_rid"]
 
 
         except Exception, e:
@@ -72,6 +73,18 @@ class MetadataManager():
             r = requests.patch(self.url_create_metadata, data=json.dumps(payload), headers=headers)
             if r.status_code is not 200:
                 raise Exception(r)
+        return json.loads(r.text)
+
+    def overwrite_dsd_rid(self, payload):
+        '''
+        Overwrite a dsd using its rid
+        :param payload: json string containing the metadata information to overwrite the rid
+        :return: the result json with basic metadata
+        '''
+        headers = {'Content-Type': 'application/json'}
+        r = requests.put(self.url_overwrite_dsd_rid, data=json.dumps(payload), headers=headers)
+        if r.status_code is not 200:
+            raise Exception(r)
         return json.loads(r.text)
 
     def publish_coding_system(self, payload, overwrite=False):
@@ -136,14 +149,17 @@ class MetadataManager():
             raise Exception(r.text)
         return json.loads(r.text)
 
-    def get_all_layers(self):
+    def get_all_layers(self, full=True, dsd=True):
         q = {
             "meContent.resourceRepresentationType": {
                 "enumeration": ["geographic"]
             }
         }
         headers = {'Content-Type': 'application/json'}
-        r = requests.post(self.url_get_metadata, data=json.dumps(q), headers=headers)
+        url = self.url_get_metadata
+        url += "?full=" + str(full) + "&dsd=" + str(dsd)
+
+        r = requests.post(url, data=json.dumps(q), headers=headers)
         if r.status_code is not 201: # TODO: why 201?
             raise Exception(r.text)
         return json.loads(r.text)
