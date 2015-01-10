@@ -1,5 +1,5 @@
 import unittest
-from test.config.metadata_manager_config_test import config
+from geobricks_metadata_manager.config.config import config
 from geobricks_metadata_manager.core.metadata_manager_d3s_core import MetadataManager
 
 workspace = "fenix"
