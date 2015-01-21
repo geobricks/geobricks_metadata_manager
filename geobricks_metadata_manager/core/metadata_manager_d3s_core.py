@@ -149,6 +149,28 @@ class MetadataManager():
             raise Exception(r.text)
         return json.loads(r.text)
 
+    def get_by_layername_workspace(self, layerName, workspace=None, full=True, dsd=True):
+        q = {
+            "meContent.resourceRepresentationType": {
+                "enumeration": ["geographic"]
+            },
+            "dsd": {
+                "layerName": layerName
+            }
+        }
+        if workspace is not None:
+            q["dsd"]["workspace"] = workspace
+        headers = {'Content-Type': 'application/json'}
+        url = self.url_get_metadata
+        url += "?full=" + str(full) + "&dsd=" + str(dsd)
+
+        print q
+
+        r = requests.post(url, data=json.dumps(q), headers=headers)
+        if r.status_code is not 201: # TODO: why 201?
+            raise Exception(r.text)
+        return json.loads(r.text)
+
     def get_all_layers(self, full=True, dsd=True):
         q = {
             "meContent.resourceRepresentationType": {

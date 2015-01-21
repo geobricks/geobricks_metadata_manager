@@ -11,10 +11,10 @@ app = Flask(__name__)
 cors = CORS(app, resources={r'/*': {'origins': '*'}})
 
 # Url blueprint prefix
-url_prefix = "/geobricks_geocoding"
+url_prefix = "/metadatamanager"
 
 # Core services.
-app.register_blueprint(geocoding_rest.app, url_prefix=url_prefix)
+app.register_blueprint(metadata_manager_rest.app, url_prefix=url_prefix)
 
 # Logging level.
 log = logging.getLogger('werkzeug')
