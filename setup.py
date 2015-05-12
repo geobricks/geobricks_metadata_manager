@@ -11,6 +11,7 @@ setup(
     long_description=open('README.md').read(),
     description='Geobricks library to manage Metadata.',
     install_requires=[
+        'watchdog',
         'flask',
         'flask-cors',
         'GeobricksCommon'
