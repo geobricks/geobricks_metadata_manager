@@ -7,12 +7,12 @@ log = logger(__file__)
 
 class MetadataManager():
 
-    config = None
-    url_create_metadata = None #"POST"
-    url_create_coding_system = None #"POST"
-    url_get_metadata_uid = None #"GET"
-    url_get_metadata = None #"POST"
-    url_delete_metadata= None #"DELETE"
+    # config = None
+    # url_create_metadata = None #"POST"
+    # url_create_coding_system = None #"POST"
+    # url_get_metadata_uid = None #"GET"
+    # url_get_metadata = None #"POST"
+    # url_delete_metadata= None #"DELETE"
 
     def __init__(self, config):
         # getting the settings
